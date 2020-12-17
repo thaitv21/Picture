@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.account.AccountFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@drawable/background_account"
+        android:elevation="10dp">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:elevation="10dp"
+            android:src="@drawable/ic_launcher_background"
+            app:riv_corner_radius="80dp" />
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/imgAvatar"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/app_name"
+            android:textColor="#fff"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/change_profile_picture"
+        android:paddingVertical="5dp"
+        android:fontFamily="@font/lato_bold"
+        android:layout_marginTop="20dp"
+        android:textSize="15sp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/update_profile_name"
+        android:paddingVertical="5dp"
+        android:fontFamily="@font/lato_bold"
+        android:layout_marginTop="20dp"
+        android:textSize="15sp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+        android:text="@string/help"
+        android:fontFamily="@font/lato_bold"
+        android:layout_marginTop="20dp"
+        android:textSize="15sp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:id="@+id/tvVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+        android:fontFamily="@font/lato_bold"
+        android:layout_marginTop="20dp"
+        android:textSize="15sp"
+        android:layout_marginStart="16dp"/>
+
+</LinearLayout>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/photoView"
+            android:contentDescription="@string/app_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/app_name"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="15dp"
+            android:background="#55e5e5e5"
+            android:inputType="textNoSuggestions"
+            android:importantForAutofill="no"
+            tools:ignore="LabelFor" />
+
+        <ImageView
+            android:id="@+id/imgClose"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_close"
+            android:contentDescription="@string/app_name"
+            android:paddingHorizontal="10dp"
+            android:src="@drawable/ic_close"
+            android:translationY="30dp" />
+    </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMenu"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#fff"
+        android:visibility="visible" />
+
+    <include
+        android:id="@+id/pageText"
+        layout="@layout/page_text"
+        android:visibility="gone" />
+
+
+</LinearLayout>

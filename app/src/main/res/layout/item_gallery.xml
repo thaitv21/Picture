@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.nullexcom.uikit.UIFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginBottom="@dimen/paddingHorizontal"
+    android:background="#fff"
+    android:elevation="10dp"
+    android:radius="15dp"
+    android:layout_marginTop="@dimen/paddingHorizontal">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/imgPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background"
+        app:riv_corner_radius="15dp"/>
+
+    <com.nullexcom.uikit.UIFrameLayout
+        android:id="@+id/viewEffect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#55000000"
+        android:radius="15dp">
+
+        <ImageView
+            android:id="@+id/imgRemove"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_close"
+            android:contentDescription="@string/app_name"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"/>
+
+    </com.nullexcom.uikit.UIFrameLayout>
+
+</com.nullexcom.uikit.UIFrameLayout>

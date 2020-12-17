@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="5dp">
+
+    <com.nullexcom.picture.component.ColorView
+        android:id="@+id/imgColor"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:endColor="#C0FF8B"
+        android:startColor="#4DD750"
+        android:elevation="5dp"/>
+
+    <ImageView
+        android:id="@+id/imgSelected"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_color_selected"
+        android:elevation="6dp"/>
+</FrameLayout>

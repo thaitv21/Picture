@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".EditorActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_arrow_back"
+            android:layout_gravity="center_vertical"
+            app:tint="#000"
+            android:padding="10dp"/>
+
+        <TextView
+            android:id="@+id/tvNext"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:text="@string/next"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textColor="#DD2C00"
+            android:paddingHorizontal="10dp"
+            android:layout_gravity="center_vertical|end"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="@string/done"
+        android:background="#FF6D00"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+</LinearLayout>

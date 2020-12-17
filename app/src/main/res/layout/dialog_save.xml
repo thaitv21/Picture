@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.nullexcom.uikit.UIFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:background="#fff"
+        android:radius="15dp" />
+
+    <com.nullexcom.uikit.UIFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_gravity="bottom"
+        android:background="#fff" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_pictures" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/lato_bold"
+            android:labelFor="@id/edtFilename"
+            android:text="@string/filename" />
+
+        <EditText
+            android:id="@+id/edtFilename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:autofillHints="@string/filename"
+            android:background="@drawable/editor_enabled"
+            android:inputType="textNoSuggestions"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
+            android:textSize="14sp" />
+
+        <com.nullexcom.uikit.UIButton
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#FF6D00"
+            android:fontFamily="@font/lato_bold"
+            android:radius="5dp"
+            android:text="@string/save_image"
+            android:textAllCaps="false"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+</FrameLayout>

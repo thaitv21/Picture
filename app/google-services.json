@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "759112720038",
+    "firebase_url": "https://picture-fb120.firebaseio.com",
+    "project_id": "picture-fb120",
+    "storage_bucket": "picture-fb120.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:759112720038:android:8be86c7c09eedc876d1e67",
+        "android_client_info": {
+          "package_name": "com.nullexcom.picture"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "759112720038-04i132k31h25ba7idm4qt1rrb8brr7i5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQGpw-BWaKdIJsRp8_WIKEanWUWDgVe94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "759112720038-04i132k31h25ba7idm4qt1rrb8brr7i5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

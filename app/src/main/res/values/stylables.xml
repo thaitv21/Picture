@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SeekBarView">
+        <attr name="title" format="string" />
+        <attr name="currentValue" format="integer" />
+        <attr name="maxValue" format="integer" />
+        <attr name="bias" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="NavItem">
+        <attr name="android:label" />
+        <attr name="android:icon" />
+    </declare-styleable>
+    <declare-styleable name="MatrixColorBar">
+        <attr name="android:textColor" />
+        <attr name="currentValue" />
+        <attr name="label" format="string" />
+    </declare-styleable>
+    <declare-styleable name="ColorView">
+        <attr name="android:startColor" />
+        <attr name="android:endColor" />
+    </declare-styleable>
+</resources>
