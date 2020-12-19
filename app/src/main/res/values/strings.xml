@@ -36,7 +36,7 @@
     <string name="error_permission">Unfortunately, Picture cannot save the image without storage permission. You will try that again, won\'t you?</string>
     <string name="login_with_google">Continue with Google</string>
     <string name="login_with_facebook">Continue with Facebook</string>
-    <string name="i_will_sign_in_later"><u>I will sign in later</u></string>
+    <string name="i_will_sign_in_later"><u>Just use in offline mode. I will sign in later</u></string>
     <string name="error_sign_in_unknown">Oh sorry, we don\'t know exactly what is wrong. Can you help us ensure that your internet connection is okay?</string>
     <string name="set_wallpaper">Set your picture as Wallpaper</string>
     <string name="share">Share to</string>

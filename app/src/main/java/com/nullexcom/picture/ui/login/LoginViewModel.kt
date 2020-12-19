@@ -1,24 +1,22 @@
 package com.nullexcom.picture.ui.login
 
-import android.content.Context
 import android.content.Intent
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.nullexcom.picture.AppState
 import com.nullexcom.picture.R
-import com.nullexcom.picture.data.repo.PreferenceRepository
+import com.nullexcom.picture.data.DataStorePreferences
 import com.nullexcom.picture.ext.getString
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 class LoginViewModel : ViewModel() {
 
-    private val preferenceRepository: PreferenceRepository by lazy { PreferenceRepository() }
+    private val dataStore : DataStorePreferences by lazy { DataStorePreferences.getInstance() }
+
     private val state = BehaviorSubject.create<LoginState>()
 
     fun getState(): Observable<LoginState> {
@@ -46,7 +44,7 @@ class LoginViewModel : ViewModel() {
             val idToken = account.idToken
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             auth.signInWithCredential(credential).addOnCompleteListener {
-                val isFirstUse = preferenceRepository.isFirstUse
+                val isFirstUse = dataStore.isFirstUse().blockingLast()
                 val nextState = if (it.isSuccessful) LoginState.Successful(isFirstUse) else LoginState.Error("Authentication failed.")
                 state.onNext(nextState)
             }

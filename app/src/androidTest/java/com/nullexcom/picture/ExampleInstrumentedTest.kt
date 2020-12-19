@@ -1,5 +1,7 @@
 package com.nullexcom.picture
 
+import com.nullexcom.editor.ext.logD
+import com.nullexcom.picture.data.DataStorePreferences
 import com.nullexcom.picture.ext.emptyMatrix
 import com.nullexcom.picture.ext.stringify
 import junit.framework.Assert.assertTrue
@@ -13,11 +15,8 @@ import org.junit.Test
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
-        // Context of the app under test.
-//        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-//        Bitmap bitmap = Glide.with(context).load("")
-        val matrix = emptyMatrix(16)
-        val str = matrix.stringify()
-        assertTrue(str, str.isEmpty())
+        DataStorePreferences.getInstance().isFirstUse().doOnNext {
+            logD("hihi")
+        }.subscribe()
     }
 }

@@ -19,7 +19,7 @@ import kotlinx.coroutines.*
 class EditorViewModel(intent: Intent) {
     val appState = AppState
 
-    private val pageState = BehaviorSubject.createDefault<EditorState>(EditorState.Histogram.apply { shouldCreate = true })
+    private val pageState = BehaviorSubject.createDefault<EditorState>(EditorState.Filter.apply { shouldCreate = true })
 
     lateinit var originalBitmap: Bitmap
     private var currentBitmap: Bitmap? = null
@@ -55,7 +55,8 @@ class EditorViewModel(intent: Intent) {
 
     fun onNextPage() {
         val nextPage = when (pageState.value) {
-            EditorState.Adjust -> EditorState.Histogram
+            EditorState.Adjust -> EditorState.Filter
+            EditorState.Filter -> EditorState.Histogram
             EditorState.Histogram -> EditorState.Blur
             EditorState.Blur -> EditorState.AskSave.apply { previousPage = EditorState.Blur }
             else -> null
@@ -66,7 +67,8 @@ class EditorViewModel(intent: Intent) {
 
     fun onBack() {
         val previousPage = when (pageState.value) {
-            EditorState.Histogram -> EditorState.ShouldFinish
+            EditorState.Filter -> EditorState.ShouldFinish
+            EditorState.Histogram -> EditorState.Filter
             EditorState.Blur -> EditorState.Histogram
             EditorState.More -> EditorState.Blur
             else -> null

@@ -25,19 +25,21 @@ class SplashActivity : AppCompatActivity() {
         val animation: Animation = AnimationUtils.loadAnimation(this, R.anim.anim_infinite_rotate)
         animation.repeatMode = Animation.INFINITE
         imgLogo.startAnimation(animation)
-        disposable = viewModel.getInfo().doOnSuccess { render(it) }.subscribe()
+        disposable = viewModel.getState().doOnSuccess { render(it) }.subscribe()
     }
 
-    private fun render(state: Pair<Boolean, Boolean>) {
-        val isLoggedIn = state.first
-        val isFirstUse = state.second
+    private fun render(state: SplashViewModel.State) {
+        if (!state.isInternetAvailable) {
+            navigateAndClearBackStack(HomeActivity::class.java)
+            return
+        }
 
-        if (!isLoggedIn) {
+        if (!state.isLoggedIn) {
             navigateAndClearBackStack(LoginActivity::class.java)
             return
         }
 
-        if (isFirstUse) {
+        if (state.isFirstUse) {
             navigateAndClearBackStack(WelcomeActivity::class.java)
             return
         }

@@ -25,16 +25,36 @@ import kotlinx.android.synthetic.main.fragment_studio.*
 import java.io.File
 import javax.inject.Inject
 import com.nullexcom.picture.ui.StudioViewModel.State
+import com.nullexcom.picture.ui.dialog.BottomActionDialog
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 
 @AndroidEntryPoint
 class StudioFragment : Fragment() {
 
+    companion object {
+        const val SET_WALLPAPER = 0
+        const val PUBLISH = 1
+        const val SHARE = 2
+        const val DELETE = 3
+        const val CANCEL = 4
+    }
+
     @Inject
     lateinit var viewModel: StudioViewModel
     lateinit var adapter: StudioAdapter
-    private var disposable: Disposable? = null
-    private lateinit var actionDialog: ActionDialog
+    private var disposable: CompositeDisposable = CompositeDisposable()
+    private lateinit var actionDialog: BottomActionDialog
     private lateinit var loadingDialog: LoadingDialog
+    private val actions: List<BottomActionDialog.Action> by lazy {
+        listOf(
+                BottomActionDialog.Action(SET_WALLPAPER, getString(R.string.set_wallpaper), R.drawable.ic_image),
+                BottomActionDialog.Action(PUBLISH, getString(R.string.publish), R.drawable.ic_logo),
+                BottomActionDialog.Action(SHARE, getString(R.string.share), R.drawable.ic_share),
+                BottomActionDialog.Action(DELETE, getString(R.string.delete), R.drawable.ic_delete),
+                BottomActionDialog.Action(CANCEL, getString(R.string.fui_cancel), R.drawable.ic_cancel)
+        )
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_studio, container, false)
@@ -51,7 +71,8 @@ class StudioFragment : Fragment() {
 
     private fun dialog() {
         loadingDialog = LoadingDialog(context!!)
-        actionDialog = ActionDialog()
+        actionDialog = BottomActionDialog()
+        actionDialog.submitList(actions)
     }
 
     private fun floatActionBar() {
@@ -74,7 +95,8 @@ class StudioFragment : Fragment() {
     }
 
     private fun observer() {
-        disposable = viewModel.state.doOnNext { render(it) }.subscribe()
+        viewModel.state.doOnNext { render(it) }.subscribe().addTo(disposable)
+        viewModel.isUserOnline().doOnNext { onNetworkChanged(it) }.subscribe().addTo(disposable)
     }
 
     private fun render(state: State) {
@@ -84,8 +106,13 @@ class StudioFragment : Fragment() {
         }
     }
 
+    private fun onNetworkChanged(connectionAvailable: Boolean) {
+        actions[1].enabled = connectionAvailable
+        actionDialog.submitList(actions)
+    }
+
     override fun onDestroyView() {
-        disposable?.dispose()
+        disposable.dispose()
         super.onDestroyView()
     }
 
@@ -118,10 +145,16 @@ class StudioFragment : Fragment() {
     }
 
     private fun showAction(photo: Photo) {
-        val context = context ?: return
         actionDialog.show(parentFragmentManager, null)
-        actionDialog.setOnClickPublish { viewModel.publish(context, photo) }
-        actionDialog.setOnClickDelete { viewModel.delete(context, photo) }
+        actionDialog.setOnItemClickListener { handleAction(it, photo) }
+    }
+
+    private fun handleAction(action: BottomActionDialog.Action, photo: Photo) {
+        val context = context ?: return
+        when (action.id) {
+            PUBLISH -> viewModel.publish(context, photo)
+            DELETE -> viewModel.delete(context, photo)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

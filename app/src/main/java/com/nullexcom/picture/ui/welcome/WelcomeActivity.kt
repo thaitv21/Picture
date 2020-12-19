@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.nullexcom.picture.HomeActivity
 import com.nullexcom.picture.R
-import com.nullexcom.picture.data.repo.PreferenceRepository
+import com.nullexcom.picture.data.DataStorePreferences
 import com.nullexcom.picture.ext.navigateAndClearBackStack
 import kotlinx.android.synthetic.main.activity_welcome.*
 
@@ -17,7 +17,7 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     private fun onClickStart() {
-        PreferenceRepository().isFirstUse = true
+        DataStorePreferences.getInstance().saveFirstUse()
         navigateAndClearBackStack(HomeActivity::class.java)
     }
 }

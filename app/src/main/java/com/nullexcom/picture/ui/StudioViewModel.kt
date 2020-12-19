@@ -8,13 +8,14 @@ import com.nullexcom.editor.data.Photo
 import com.nullexcom.picture.data.Firebase
 import com.nullexcom.picture.data.PhotoRepository
 import com.nullexcom.picture.data.Template
+import com.nullexcom.picture.viewmodels.AppViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.*
 import java.io.File
 import javax.inject.Inject
 
-class StudioViewModel @Inject constructor(private val photoRepository: PhotoRepository) {
+class StudioViewModel @Inject constructor(private val photoRepository: PhotoRepository) : AppViewModel(){
 
     enum class State {
         NONE,

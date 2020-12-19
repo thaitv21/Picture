@@ -15,6 +15,5 @@ public class MainApplication : Application() {
         application = this
         Strings.loadResources(this)
         AppState.application = this
-        FirebaseApp.initializeApp(this)
     }
 }

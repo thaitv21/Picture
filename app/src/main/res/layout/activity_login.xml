@@ -86,8 +86,8 @@
     </com.nullexcom.uikit.UIFrameLayout>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:src="@drawable/ic_logo"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,9 +108,10 @@
         app:layout_constraintGuide_percent="0.7" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvUseOfflineMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
         android:text="@string/i_will_sign_in_later"
         android:textColor="#fff"
         android:textSize="14sp"
