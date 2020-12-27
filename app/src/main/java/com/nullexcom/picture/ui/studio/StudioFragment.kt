@@ -11,16 +11,14 @@ import android.view.animation.BounceInterpolator
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.nullexcom.editor.data.Photo
+import com.nullexcom.picture.data.Photo
 import com.nullexcom.picture.ext.addEndListener
 import com.nullexcom.picture.*
 import com.nullexcom.picture.ext.ifFalse
 import com.nullexcom.picture.ui.StudioViewModel
-import com.nullexcom.picture.ui.dialog.ActionDialog
 import com.nullexcom.picture.ui.dialog.LoadingDialog
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_studio.*
 import java.io.File
 import javax.inject.Inject

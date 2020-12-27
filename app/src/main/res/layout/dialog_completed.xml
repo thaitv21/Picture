@@ -68,4 +68,17 @@
         android:textSize="15sp"
         app:drawableStartCompat="@drawable/ic_upload" />
 
+    <TextView
+        android:id="@+id/viewCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:drawablePadding="15dp"
+        android:fontFamily="@font/lato_regular"
+        android:gravity="center_vertical"
+        android:text="@string/do_nothing"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_cancel" />
+
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.nullexcom.picture.data
+package com.nullexcom.picture.imageprocessor
 
 import androidx.renderscript.Allocation
 import androidx.renderscript.Element
@@ -23,10 +23,17 @@ class HSLModule : Module {
     }
 
     override fun process(rs: RenderScript, allocationIn: Allocation, allocationOut: Allocation) {
+        if (values.none { it != 0f }) {
+            return
+        }
         val script = ScriptC_hsl(rs)
         val allocationValues = Allocation.createSized(rs, Element.F32(rs), values.size)
         allocationValues.copyFrom(values)
         script.bind_values(allocationValues)
         script.forEach_process(allocationIn, allocationOut)
+    }
+
+    override fun isUseless(): Boolean {
+        return values.find { it != 0f } == null
     }
 }

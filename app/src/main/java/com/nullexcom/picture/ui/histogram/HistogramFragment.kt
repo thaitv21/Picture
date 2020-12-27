@@ -1,4 +1,4 @@
-package com.nullexcom.picture
+package com.nullexcom.picture.ui.histogram
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -6,18 +6,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.renderscript.RenderScript
+import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.nullexcom.editor.ext.dp
-import com.nullexcom.picture.data.BrightnessModule
-import io.reactivex.rxjava3.disposables.Disposable
+import com.nullexcom.picture.*
+import com.nullexcom.picture.ext.dp
+import com.nullexcom.picture.viewmodels.HistogramViewModel
+import com.nullexcom.picture.viewmodels.HistogramViewModelFactory
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 import kotlinx.android.synthetic.main.fragment_histogram.*
 
 class HistogramFragment : BaseEditorFragment() {
 
-    private val viewModel by lazy { HistogramViewModel(editorViewModel().getCropped(), editorViewModel().template.modules) }
+    private val editorViewModel: EditorViewModel by lazy { editorViewModel() }
+
+    private val viewModel by viewModels<HistogramViewModel> { HistogramViewModelFactory(editorViewModel.getPhoto(), editorViewModel.getCurrentBitmap()) }
 
     companion object {
         const val BRIGHTNESS = 1
@@ -47,7 +51,7 @@ class HistogramFragment : BaseEditorFragment() {
     )
 
     private val onPageChangedCallback = ViewPager2PageChangeCallback()
-    private var disposable: Disposable? = null
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_histogram, container, false)
@@ -59,17 +63,13 @@ class HistogramFragment : BaseEditorFragment() {
         viewPager.isUserInputEnabled = false
         viewPager.registerOnPageChangeCallback(onPageChangedCallback)
         imgClose.setOnClickListener { selectPage(0) }
-        disposable = viewModel.filteredBitmap.doOnNext { photoView.setImageBitmap(it) }.subscribe()
-    }
-
-    override fun onResume() {
-        super.onResume()
-//        viewModel.requestFilteredBitmap()
+        lifecycle.addObserver(viewModel)
+        viewModel.getBitmap().doOnNext { photoView.setImageBitmap(it) }.subscribe().addTo(compositeDisposable)
     }
 
     override fun onDestroyView() {
         viewPager.unregisterOnPageChangeCallback(onPageChangedCallback)
-        disposable?.dispose()
+        compositeDisposable.dispose()
         super.onDestroyView()
     }
 
@@ -81,7 +81,12 @@ class HistogramFragment : BaseEditorFragment() {
 
     override fun onNextAction() {
         super.onNextAction()
-        editorViewModel().setFilteredBitmap(viewModel.filteredBitmap.value)
+        viewModel.onNext(editorViewModel)
+    }
+
+    override fun onBackAction() {
+        super.onBackAction()
+        viewModel.onBack(editorViewModel)
     }
 
     override fun onNewBitmap(bitmap: Bitmap) {
@@ -100,14 +105,13 @@ class HistogramFragment : BaseEditorFragment() {
         viewPager.layoutParams = layoutParams
     }
 
-    inner class ViewPager2PageChangeCallback() : ViewPager2.OnPageChangeCallback() {
+    inner class ViewPager2PageChangeCallback : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             val fragment = pages[position]
-            if (fragment is PageColorMatrixFragment) {
-                updateViewPagerHeight(dp(150f))
-                return
+            updateViewPagerHeight(dp(if (fragment is PageColorMatrixFragment) 150f else 100f))
+            if (fragment is OnTemplateChangedListener) {
+                (fragment as OnTemplateChangedListener).onChanged(viewModel.getTemplate())
             }
-            updateViewPagerHeight(dp(100f))
         }
     }
 }

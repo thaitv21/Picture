@@ -1,23 +1,47 @@
-package com.nullexcom.picture
+package com.nullexcom.picture.viewmodels
 
 import android.graphics.Bitmap
-import androidx.renderscript.*
-import com.nullexcom.editor.ext.logD
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import com.nullexcom.picture.ApplicationContextCompat
+import com.nullexcom.picture.EditorViewModel
 import com.nullexcom.picture.data.*
 import com.nullexcom.picture.ext.Matrix
+import com.nullexcom.picture.imageprocessor.*
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
-class HistogramViewModel(val croppedBitmap: Bitmap, val modules: MutableList<Module>) {
-    val filteredBitmap: BehaviorSubject<Bitmap> = BehaviorSubject.createDefault(croppedBitmap.copy(Bitmap.Config.ARGB_8888, true))
-    private val allocationIn: Allocation by lazy { Allocation.createFromBitmap(AppState.rs, croppedBitmap) }
-    private val allocationOut: Allocation by lazy { Allocation.createTyped(AppState.rs, allocationIn.type) }
+class HistogramViewModel(val photo: Photo, private val srcBitmap: Bitmap) : AppViewModel(), LifecycleObserver {
+    private val bitmap: BehaviorSubject<Bitmap> = BehaviorSubject.create()
+    private val template = Template().apply { copyFrom(photo.template) }
+    private val modules = template.modules
+    private val applicationContextCompat: ApplicationContextCompat by lazy { ApplicationContextCompat.getInstance() }
+    private val imageProcessor: ImageProcessor by lazy {
+        ImageProcessor(applicationContextCompat.getApplicationContext(), photo, applicationContextCompat.preferBitmapSize())
+    }
 
-    init {
-        apply()
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun initialize() {
+        bitmap.onNext(srcBitmap)
+    }
+
+    fun getTemplate() : Template {
+        return template
+    }
+
+    fun getBitmap(): Observable<Bitmap> {
+        return bitmap
+    }
+
+    fun onNext(editorViewModel: EditorViewModel) {
+        photo.copyFrom(template)
+        editorViewModel.pushBitmap(bitmap.value)
+    }
+
+    fun onBack(editorViewModel: EditorViewModel) {
+        editorViewModel.popBitmap()
     }
 
     fun onBrightnessChanged(value: Float) {
@@ -72,24 +96,12 @@ class HistogramViewModel(val croppedBitmap: Bitmap, val modules: MutableList<Mod
 
     private fun apply() {
         CoroutineScope(Dispatchers.Default).launch {
-            val rs = AppState.rs
-
-            val bitmap = filteredBitmap.value
-
-            //handle color matrix module
-            val module = HistogramModule()
-            modules.forEach { if (it is HistogramModule) module.merge(it) }
-            module.process(rs, allocationIn, allocationOut)
-
-            //handle HSL
-            val hslModule = modules.find { it is HSLModule }
-            hslModule?.process(rs, allocationOut, allocationOut)
-
-            allocationOut.copyTo(bitmap)
-
-            withContext(Dispatchers.Main) {
-                logD("finish")
-                filteredBitmap.onNext(bitmap)
+            val bmp = bitmap.value
+            GlobalScope.launch {
+                imageProcessor.blend(bmp, template)
+                withContext(Dispatchers.Main) {
+                    bitmap.onNext(bmp)
+                }
             }
         }
     }

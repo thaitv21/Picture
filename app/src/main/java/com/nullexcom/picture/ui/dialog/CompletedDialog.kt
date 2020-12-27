@@ -13,6 +13,7 @@ class CompletedDialog : BottomSheetDialogFragment() {
     private var onClickSetWallpaper: (() -> Unit)? = null
     private var onClickPublish: (() -> Unit)? = null
     private var onClickShare: (() -> Unit)? = null
+    private var onCancel: (() -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_completed, container, false)
@@ -23,6 +24,7 @@ class CompletedDialog : BottomSheetDialogFragment() {
         viewSetWallpaper.setOnClickListener { handleClick(onClickSetWallpaper) }
         viewPublish.setOnClickListener { handleClick(onClickPublish) }
         viewShare.setOnClickListener { handleClick(onClickShare) }
+        viewCancel.setOnClickListener { handleClick(onCancel) }
     }
 
     private fun handleClick(onClick: (() -> Unit)?) {
@@ -40,5 +42,9 @@ class CompletedDialog : BottomSheetDialogFragment() {
 
     fun setOnClickShare(onClickShare: () -> Unit) {
         this.onClickShare = onClickShare
+    }
+
+    fun setOnClickCancel(onCancel: (() -> Unit)) {
+        this.onCancel = onCancel
     }
 }

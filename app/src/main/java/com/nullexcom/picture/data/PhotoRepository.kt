@@ -1,7 +1,6 @@
 package com.nullexcom.picture.data
 
 import android.net.Uri
-import com.nullexcom.editor.data.Photo
 import com.nullexcom.editor.ext.copyTo
 import com.nullexcom.picture.AppState
 import java.io.File
@@ -14,7 +13,7 @@ class PhotoRepository @Inject constructor() {
     fun photos(): List<Photo> {
         dir.mkdirs()
         val files = dir.listFiles() ?: return emptyList()
-        return files.filter { it.isFile }.map { Photo(it.nameWithoutExtension, Uri.fromFile(it)) }
+        return files.filter { it.isFile }.map { Photo.fromFile(it) }
     }
 
     fun addPhoto(uri: Uri): File {

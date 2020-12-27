@@ -1,4 +1,4 @@
-package com.nullexcom.picture.data
+package com.nullexcom.picture.imageprocessor
 
 import com.nullexcom.picture.ext.matrixOf
 import com.nullexcom.picture.ext.multiply
@@ -10,6 +10,9 @@ class SaturationModule : HistogramModule() {
     private val lumB = 0.0820f
 
     override fun applyTo(module: HistogramModule) {
+        if (value == 0f) {
+            return
+        }
         val sr = (1 - value) * lumR
         val sg = (1 - value) * lumG
         val sb = (1 - value) * lumB
@@ -29,5 +32,9 @@ class SaturationModule : HistogramModule() {
                 module.matrix[i][j] = result[i][j]
             }
         }
+    }
+
+    override fun isUseless(): Boolean {
+        return value == 0f
     }
 }

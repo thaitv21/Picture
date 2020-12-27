@@ -1,4 +1,4 @@
-package com.nullexcom.picture.data
+package com.nullexcom.picture.imageprocessor
 
 import com.nullexcom.picture.ext.Matrix
 import com.nullexcom.picture.ext.copyFrom

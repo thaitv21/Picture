@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toFile
-import com.nullexcom.editor.data.Photo
+import com.nullexcom.picture.data.Photo
 import com.nullexcom.picture.data.Firebase
 import com.nullexcom.picture.data.PhotoRepository
 import com.nullexcom.picture.data.Template

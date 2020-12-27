@@ -1,19 +1,15 @@
 package com.nullexcom.picture.ui.more
 
-import android.animation.Animator
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nullexcom.editor.ext.dp
+import com.nullexcom.picture.ext.dp
 import com.nullexcom.picture.BaseEditorFragment
 import com.nullexcom.picture.MenuAdapter
 import com.nullexcom.picture.R
-import com.nullexcom.picture.ext.addEndListener
-import kotlinx.android.synthetic.main.fragment_histogram.*
 import kotlinx.android.synthetic.main.fragment_more.*
 import kotlinx.android.synthetic.main.fragment_more.imgClose
 import kotlinx.android.synthetic.main.fragment_more.photoView

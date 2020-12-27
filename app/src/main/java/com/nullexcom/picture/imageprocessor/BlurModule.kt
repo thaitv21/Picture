@@ -1,16 +1,12 @@
-package com.nullexcom.picture.data
+package com.nullexcom.picture.imageprocessor
 
 import android.graphics.*
 import androidx.renderscript.Allocation
 import androidx.renderscript.Element
 import androidx.renderscript.RenderScript
 import androidx.renderscript.ScriptIntrinsicBlur
-import com.nullexcom.editor.ext.logD
 import com.nullexcom.picture.AppState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.nullexcom.picture.imageprocessor.Module
 
 class BlurModule : Module {
 
@@ -43,7 +39,6 @@ class BlurModule : Module {
 
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OVER)
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
-        logD("draw")
     }
 
     private fun blurBackground(rs: RenderScript, bitmap: Bitmap, outBitmap: Bitmap, radius: Float): Bitmap {
@@ -55,6 +50,10 @@ class BlurModule : Module {
         script.forEach(allocationOut)
         allocationOut.copyTo(outBitmap)
         return outBitmap
+    }
+
+    override fun isUseless(): Boolean {
+        return radius == 0f
     }
 
 }

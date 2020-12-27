@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.nullexcom.editor.data.Photo
+import com.nullexcom.picture.data.Photo
 import com.nullexcom.editor.ext.screenWidth
 import kotlinx.android.synthetic.main.item_gallery.view.*
 

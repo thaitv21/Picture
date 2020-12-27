@@ -1,19 +1,22 @@
-package com.nullexcom.picture
+package com.nullexcom.picture.ui.histogram
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.nullexcom.picture.R
 import com.nullexcom.picture.component.MiddleProgressBar
 import com.nullexcom.picture.ext.*
+import com.nullexcom.picture.imageprocessor.HSLModule
+import com.nullexcom.picture.viewmodels.HistogramViewModel
 import kotlinx.android.synthetic.main.item_color.view.*
 import kotlinx.android.synthetic.main.page_hsl.*
+import kotlin.math.roundToInt
 
 class PageHSLFragment : Fragment() {
 
@@ -34,6 +37,7 @@ class PageHSLFragment : Fragment() {
     )
     private val values = FloatArray(36) { 0f }
     private var onValuesChanged: ((FloatArray) -> Unit)? = null
+    private val viewModel: HistogramViewModel by viewModels({ requireParentFragment() })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.page_hsl, container, false)
@@ -49,6 +53,18 @@ class PageHSLFragment : Fragment() {
                 handleValueChanged(progress)
             }
         })
+        fillData()
+    }
+
+    private fun fillData() {
+        val template = viewModel.getTemplate()
+        val module = template.modules.find { it is HSLModule } ?: return
+        val hslModule = module as HSLModule
+        if (hslModule.isUseless()) return
+        val hslValues = hslModule.get()
+        hslValues.forEachIndexed { index, value -> values[index] = value }
+        val value = values[3 * currentIndex] * 100f / 30f
+        pbHSLValue.setValue(value.roundToInt())
     }
 
     fun setOnValuesChanged(onValuesChanged: ((FloatArray) -> Unit)) {

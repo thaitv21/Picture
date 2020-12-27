@@ -11,6 +11,7 @@ class AppInitializer : Initializer<Unit> {
 
     override fun dependencies(): MutableList<Class<out Initializer<*>>> {
         return mutableListOf(
+                ApplicationContextCompatInitializer::class.java,
                 NetworkIntoInitializer::class.java,
                 FirebaseInitializer::class.java,
                 DataStoreInitializer::class.java

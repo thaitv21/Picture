@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.nullexcom.picture.R
-import com.nullexcom.editor.ext.dp
+import com.nullexcom.picture.ext.dp
 
 class NavItem : LinearLayout {
     constructor(context: Context) : super(context) {init(null)}

@@ -1,6 +1,5 @@
 package com.nullexcom.picture
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,16 +7,16 @@ import com.bumptech.glide.Glide
 import com.nullexcom.editor.ext.doOnCompleted
 import com.nullexcom.editor.ext.logD
 import com.nullexcom.picture.ext.alert
-import com.nullexcom.picture.ext.isPermissionGranted
 import com.nullexcom.picture.ui.EditorState
 import com.nullexcom.picture.ui.blur.BlurFragment
 import com.nullexcom.picture.ui.dialog.CompletedDialog
 import com.nullexcom.picture.ui.dialog.ProgressDialog
 import com.nullexcom.picture.ui.dialog.SaveDialog
+import com.nullexcom.picture.ui.filter.FilterFragment
+import com.nullexcom.picture.ui.histogram.HistogramFragment
 import com.nullexcom.picture.ui.more.MoreFragment
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_editor.*
-import java.util.jar.Manifest
 
 class EditorActivity : AppCompatActivity() {
 
@@ -43,6 +42,9 @@ class EditorActivity : AppCompatActivity() {
                 return@addOnBackStackChangedListener
             }
             if (supportFragmentManager.backStackEntryCount < backStackCount) {
+                supportFragmentManager.fragments.find { it.isVisible && it is BaseEditorFragment }?.let {
+                    (it as BaseEditorFragment).onBackAction()
+                }
                 viewModel.onBack()
             }
             backStackCount = supportFragmentManager.backStackEntryCount
@@ -52,6 +54,7 @@ class EditorActivity : AppCompatActivity() {
             setOnClickSetWallpaper { viewModel.setWallpaper(this@EditorActivity) }
             setOnClickPublish { viewModel.publishImage() }
             setOnClickShare { viewModel.share(this@EditorActivity) }
+            setOnClickCancel { viewModel.finish() }
         }
     }
 
@@ -95,11 +98,13 @@ class EditorActivity : AppCompatActivity() {
 
     private fun complete() {
         progressDialog.dismiss()
+        completedDialog.isCancelable = false
         completedDialog.show(supportFragmentManager, "")
     }
 
     private fun showFragment(state: EditorState) {
         val fragment = when (state) {
+            EditorState.Filter -> FilterFragment()
             EditorState.Histogram -> HistogramFragment()
             EditorState.Blur -> BlurFragment()
             EditorState.More -> MoreFragment()

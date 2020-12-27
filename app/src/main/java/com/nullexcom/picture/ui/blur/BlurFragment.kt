@@ -6,16 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.nullexcom.picture.BaseEditorFragment
+import com.nullexcom.picture.EditorViewModel
 import com.nullexcom.picture.R
-import com.nullexcom.picture.component.MiddleProgressBar
-import com.nullexcom.picture.component.StartProgressBar
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 import kotlinx.android.synthetic.main.fragment_blur.*
 
 class BlurFragment : BaseEditorFragment() {
 
-    private val viewModel: BlurViewModel by lazy { BlurViewModel(editorViewModel().getFilteredBitmap(), editorViewModel().template.modules) }
-    private lateinit var disposable: Disposable
+    private val editorViewModel: EditorViewModel by lazy { editorViewModel() }
+    private val viewModel: BlurViewModel by lazy { BlurViewModel(editorViewModel.getPhoto(), editorViewModel.getCurrentBitmap()) }
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_blur, container, false)
@@ -23,7 +24,8 @@ class BlurFragment : BaseEditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        disposable = viewModel.getBlurredBitmap().doOnNext { photoView.setImageBitmap(it) }.subscribe()
+        lifecycle.addObserver(viewModel)
+        viewModel.getBlurredBitmap().doOnNext { photoView.setImageBitmap(it) }.subscribe().addTo(compositeDisposable)
         pbBlur.setOnProgressChangedListener { progress, fromUser ->
             if (fromUser) {
                 handleProgressChanged(progress)
@@ -33,7 +35,7 @@ class BlurFragment : BaseEditorFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable.dispose()
+        compositeDisposable.dispose()
     }
 
     private fun handleProgressChanged(progress: Int) {
@@ -41,9 +43,9 @@ class BlurFragment : BaseEditorFragment() {
         viewModel.onRadiusChanged(progress / 10f)
     }
 
-    override fun onNextAction() {
-        super.onNextAction()
-
+    override fun onBackAction() {
+        super.onBackAction()
+        viewModel.onBack(editorViewModel)
     }
 
     override fun onNewBitmap(bitmap: Bitmap) {

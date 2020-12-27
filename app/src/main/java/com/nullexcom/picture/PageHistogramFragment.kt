@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nullexcom.picture.HistogramFragment.Companion.BRIGHTNESS
-import com.nullexcom.picture.HistogramFragment.Companion.COLOR_MATRIX
-import com.nullexcom.picture.HistogramFragment.Companion.CONTRAST
-import com.nullexcom.picture.HistogramFragment.Companion.HSL
-import com.nullexcom.picture.HistogramFragment.Companion.SATURATION
+import com.nullexcom.picture.ui.histogram.HistogramFragment.Companion.BRIGHTNESS
+import com.nullexcom.picture.ui.histogram.HistogramFragment.Companion.COLOR_MATRIX
+import com.nullexcom.picture.ui.histogram.HistogramFragment.Companion.CONTRAST
+import com.nullexcom.picture.ui.histogram.HistogramFragment.Companion.HSL
+import com.nullexcom.picture.ui.histogram.HistogramFragment.Companion.SATURATION
 import kotlinx.android.synthetic.main.page_histogram.*
 
 class PageHistogramFragment : Fragment() {

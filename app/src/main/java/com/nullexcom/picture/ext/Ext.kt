@@ -47,7 +47,11 @@ fun Matrix.multiply(matrix: Matrix): Matrix {
 }
 
 fun emptyMatrix(size: Int): Matrix {
-    return Array(size) { Array(size) { 0f } }
+    val matrix = Array(size) { Array(size) { 0f } }
+    for (i in 0 until size) {
+        matrix[i][i] = 1f
+    }
+    return matrix
 }
 
 fun matrix(vararg vectors: Vector): Matrix {

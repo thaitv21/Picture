@@ -7,9 +7,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
-import com.nullexcom.editor.ext.dp
+import com.nullexcom.picture.ext.dp
 import com.nullexcom.editor.ext.logD
 
 class ProgressView : View {

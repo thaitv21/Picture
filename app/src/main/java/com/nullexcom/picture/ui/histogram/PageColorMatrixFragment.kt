@@ -1,23 +1,27 @@
-package com.nullexcom.picture
+package com.nullexcom.picture.ui.histogram
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nullexcom.picture.component.MiddleProgressBar
+import com.nullexcom.picture.ColorAdapter
+import com.nullexcom.picture.R
 import com.nullexcom.picture.ext.Matrix
-import com.nullexcom.picture.ext.emptyMatrix
 import com.nullexcom.picture.ext.matrixOf
+import com.nullexcom.picture.imageprocessor.ColorMatrixModule
+import com.nullexcom.picture.viewmodels.HistogramViewModel
 import kotlinx.android.synthetic.main.page_color_matrix.*
+import kotlin.math.roundToInt
 
 class PageColorMatrixFragment : Fragment() {
 
     private lateinit var colorItems: List<ColorItem>
     private var currentIndex = 0
     private var onMatrixChanged: ((Matrix) -> Unit)? = null
+    private val viewModel: HistogramViewModel by viewModels({ requireParentFragment() })
     private var matrix = matrixOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
@@ -109,5 +113,24 @@ class PageColorMatrixFragment : Fragment() {
         fun toValueTwo(): Float {
             return 2 * valueTwo / 100f
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val template = viewModel.getTemplate()
+        val colorMatrixModule = template.modules.find { it is ColorMatrixModule } ?: return
+        val colorMatrix = (colorMatrixModule as ColorMatrixModule).matrix
+        colorItems[0].valueOne = calculateProgress(colorMatrix[0][1])
+        colorItems[0].valueTwo = calculateProgress(colorMatrix[0][2])
+        colorItems[1].valueOne = calculateProgress(colorMatrix[1][0])
+        colorItems[1].valueTwo = calculateProgress(colorMatrix[1][2])
+        colorItems[2].valueOne = calculateProgress(colorMatrix[2][0])
+        colorItems[2].valueTwo = calculateProgress(colorMatrix[2][1])
+        onItemSelected(currentIndex)
+
+    }
+
+    private fun calculateProgress(value: Float) : Int {
+        return (50f * value).roundToInt()
     }
 }

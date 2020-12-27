@@ -8,7 +8,7 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.nullexcom.picture.R
-import com.nullexcom.editor.ext.dp
+import com.nullexcom.picture.ext.dp
 
 class NavigationBar : FrameLayout {
     constructor(context: Context) : super(context) {}

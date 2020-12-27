@@ -7,14 +7,11 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
-import com.nullexcom.editor.ext.dp
+import com.nullexcom.picture.ext.dp
 import com.nullexcom.editor.ext.newImageView
 import com.nullexcom.editor.ext.newTextView
 import com.nullexcom.picture.R

@@ -4,12 +4,38 @@ import android.graphics.Point
 import com.nullexcom.picture.ext.emptyMatrix
 import com.nullexcom.picture.ext.matrixOf
 import com.nullexcom.picture.ext.stringify
-import com.yalantis.ucrop.model.AspectRatio
+import com.nullexcom.picture.imageprocessor.*
+import java.util.*
+import kotlin.random.Random
 
-class Template() {
+class Template {
 
     val aspectRatio = Point()
     val modules = mutableListOf<Module>()
+    private val id = (1..10).map { Random.nextInt(97, 122).toChar() }.joinToString("")
+
+    fun getId(): String {
+        return id
+    }
+
+    fun addModule(module: Module) {
+        modules.add(module)
+    }
+
+    fun copyFrom(template: Template) {
+        val s = template.toString()
+        val clone = parse(s)
+        this.modules.clear()
+        this.modules.addAll(clone.modules.filter { !it.isUseless() })
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(id)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
 
     override fun toString(): String {
         val brightness = modules.find { it is BrightnessModule }?.let { (it as BrightnessModule).value }
@@ -19,7 +45,7 @@ class Template() {
         val saturation = modules.find { it is SaturationModule }?.let { (it as SaturationModule).value }
                 ?: 0f
         val colorMatrix = modules.find { it is ColorMatrixModule }?.let { (it as ColorMatrixModule).matrix }
-                ?: emptyMatrix(16)
+                ?: emptyMatrix(4)
         val hsl = modules.find { it is HSLModule }?.let { (it as HSLModule).get() }
                 ?: FloatArray(36)
         val blur = modules.find { it is BlurModule }?.let { (it as BlurModule).get() } ?: 0f
@@ -44,6 +70,22 @@ class Template() {
                     it.startsWith("color_matrix") -> parseColorMatrix(template, it)
                     it.startsWith("hsl") -> parseHSL(template, it)
                     it.startsWith("blur") -> parseBlur(template, it)
+                }
+            }
+            return template
+        }
+
+        fun fromMap(map: Map<String, String>): Template {
+            val template = Template()
+            map.keys.forEach {
+                val value = map[it] ?: ""
+                when (it) {
+                    "aspect_ratio" -> parseAspectRatio(template, value)
+                    "brightness" -> parseBrightness(template, value)
+                    "contrast" -> parseContrast(template, value)
+                    "saturation" -> parseSaturation(template, value)
+                    "color_matrix" -> parseColorMatrix(template, value)
+                    "hsl" -> parseHSL(template, value)
                 }
             }
             return template
@@ -74,6 +116,7 @@ class Template() {
 
         private fun parseColorMatrix(template: Template, text: String) {
             val values = text.replace("color_matrix:", "")
+                    .replace("[", "").replace("]", "")
                     .split(", ").map { it.trim().toFloat() }
             template.modules.add(ColorMatrixModule().apply { setMatrix(matrixOf(values)) })
         }

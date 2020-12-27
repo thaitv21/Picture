@@ -5,19 +5,21 @@ import android.content.ContentValues
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Size
 import androidx.core.net.toFile
 import com.nullexcom.picture.AppState
-import com.nullexcom.picture.ext.emptyMatrix
-import com.nullexcom.picture.ext.stringify
+import com.nullexcom.picture.ApplicationContextCompat
+import com.nullexcom.picture.imageprocessor.ImageProcessor
+import com.nullexcom.picture.ext.toBitmap
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.file.Files
 
 
-class ImageExporter(val bitmap: Bitmap, val uri: Uri, val name: String, private val template: Template) {
+class ImageExporter(val photo: Photo, val name: String, private val template: Template) {
 
     private val context = AppState.application.applicationContext
     private val presetFile: File
+    private val uri = photo.uri
 
     init {
         val dir = context.getExternalFilesDir("presets")
@@ -41,6 +43,7 @@ class ImageExporter(val bitmap: Bitmap, val uri: Uri, val name: String, private 
         val insertUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         val file = File(context.getExternalFilesDir("out"), uri.toFile().name)
         insertUri?.let {
+            val bitmap = applyFilter()
             contentResolver.openOutputStream(it)?.apply {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, this)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
@@ -49,6 +52,18 @@ class ImageExporter(val bitmap: Bitmap, val uri: Uri, val name: String, private 
         }
         return insertUri
     }
+
+    private fun applyFilter() : Bitmap {
+        val bitmap = uri.toBitmap()
+        val size = Size(bitmap.width, bitmap.height)
+        val applicationContextCompat = ApplicationContextCompat.getInstance()
+        val context = applicationContextCompat.getApplicationContext()
+        val imageProcessor = ImageProcessor(context, photo, size)
+        val outBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        imageProcessor.blend(outBitmap, template)
+        return bitmap
+    }
+
 
     private fun exportPreset() {
         if (!presetFile.exists()) {

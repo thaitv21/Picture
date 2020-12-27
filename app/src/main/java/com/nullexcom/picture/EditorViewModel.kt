@@ -8,13 +8,13 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import androidx.core.net.toFile
 import com.nullexcom.picture.data.*
 import com.nullexcom.picture.ui.EditorState
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.*
+import java.util.*
 
 class EditorViewModel(intent: Intent) {
     val appState = AppState
@@ -24,17 +24,43 @@ class EditorViewModel(intent: Intent) {
     lateinit var originalBitmap: Bitmap
     private var currentBitmap: Bitmap? = null
     private var insertedUri: Uri? = null
-    val template = Template()
 
     private var name: String = intent.getStringExtra("name") ?: ""
     private var uri: Uri = intent.getParcelableExtra("uri") ?: Uri.EMPTY
+    private lateinit var photo: Photo
+    private lateinit var template: Template
+    private val stack = Stack<Bitmap>()
 
     init {
         if (Uri.EMPTY == uri) {
             pageState.onNext(EditorState.Error)
         } else {
+            photo = Photo.fromUri(uri)
+            template = photo.template
             originalBitmap = decodeImage(uri).copy(Bitmap.Config.ARGB_8888, true)
+            stack.push(originalBitmap)
         }
+    }
+
+    fun pushBitmap(bitmap: Bitmap) {
+        stack.push(bitmap)
+    }
+
+    fun getCurrentBitmap(): Bitmap {
+        return stack.peek()
+    }
+
+    fun popBitmap() {
+        val bitmap = stack.pop()
+        bitmap.recycle()
+    }
+
+    fun getPhoto() : Photo {
+        return photo
+    }
+
+    fun getTemplate() : Template {
+        return template
     }
 
     fun getPageState(): Observable<EditorState> {
@@ -47,10 +73,6 @@ class EditorViewModel(intent: Intent) {
 
     fun getFilteredBitmap(): Bitmap {
         return currentBitmap ?: getCropped()
-    }
-
-    fun setFilteredBitmap(bitmap: Bitmap) {
-        currentBitmap = bitmap
     }
 
     fun onNextPage() {
@@ -97,9 +119,8 @@ class EditorViewModel(intent: Intent) {
 
     fun saveImage(filename: String) {
         pageState.onNext(EditorState.Saving.apply { shouldCreate = true })
-        val bitmap = currentBitmap ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            val imageExporter = ImageExporter(bitmap, uri, filename, template)
+            val imageExporter = ImageExporter(photo, filename, template)
             insertedUri = imageExporter.export()
             withContext(Dispatchers.Main) {
                 pageState.onNext(EditorState.Completed.apply { shouldCreate = true })
@@ -130,5 +151,9 @@ class EditorViewModel(intent: Intent) {
         }.invokeOnCompletion {
             pageState.onNext(EditorState.Done)
         }
+    }
+
+    fun finish() {
+        pageState.onNext(EditorState.Done)
     }
 }

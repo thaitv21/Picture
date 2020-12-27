@@ -12,7 +12,7 @@ abstract class BaseEditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = editorViewModel() ?: return
+        val viewModel = editorViewModel()
         val appState = viewModel.appState
         disposable = appState.getOriginalBitmap().doOnNext { onNewBitmap(it) }.subscribe()
     }
@@ -29,6 +29,10 @@ abstract class BaseEditorFragment : Fragment() {
     abstract fun onNewBitmap(bitmap: Bitmap)
 
     open fun onNextAction() {
+
+    }
+
+    open fun onBackAction() {
 
     }
 }

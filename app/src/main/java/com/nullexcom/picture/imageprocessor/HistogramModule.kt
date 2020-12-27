@@ -1,4 +1,4 @@
-package com.nullexcom.picture.data
+package com.nullexcom.picture.imageprocessor
 
 import androidx.renderscript.Allocation
 import androidx.renderscript.RenderScript
@@ -23,7 +23,7 @@ open class HistogramModule : Module {
         return this
     }
 
-    fun toMatrix4f() : Matrix4f {
+    private fun toMatrix4f() : Matrix4f {
         val values = mutableListOf<Float>()
         matrix.forEach { values.addAll(it) }
         return Matrix4f(values.toFloatArray())
@@ -34,5 +34,15 @@ open class HistogramModule : Module {
         val matrix = toMatrix4f()
         script.setColorMatrix(matrix)
         script.forEach(allocationIn, allocationOut)
+    }
+
+    override fun isUseless() : Boolean {
+        for (i in 0..3) {
+            for (j in 0..3) {
+                if (i == j && matrix[i][j] != 1f) return false
+                if (i != j && matrix[i][j] != 0f) return false
+            }
+        }
+        return true
     }
 }

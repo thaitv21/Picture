@@ -43,4 +43,8 @@ class MiddleProgressView : LinearLayout {
             }
         }
     }
+
+    fun setValue(value: Int) {
+        pbValue.setValue(value)
+    }
 }
