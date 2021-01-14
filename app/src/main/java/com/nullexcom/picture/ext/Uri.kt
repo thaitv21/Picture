@@ -56,14 +56,13 @@ private fun calculateImageSize(file: File): Size {
 
 private fun calculateInSampleSize(size: Size, requestSize: Size): Int {
     val (height: Int, width: Int) = size.run { height to width }
-    val (reqHeight: Int, reqWidth) = requestSize.run { this.height to this.width }
-    var inSampleSize = 1
-    if (height > reqHeight || width > reqWidth) {
-        val halfHeight: Int = height / 2
-        val halfWidth: Int = width / 2
-        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-            inSampleSize *= 2
-        }
+    val (reqHeight: Int, reqWidth) = requestSize.run { requestSize.height to requestSize.width }
+    if (reqHeight >= height && reqWidth >= width) {
+        return 1
+    }
+    var inSampleSize = 2
+    while (width / inSampleSize > reqWidth && height / inSampleSize > height) {
+        inSampleSize *= 2
     }
     return inSampleSize
 }

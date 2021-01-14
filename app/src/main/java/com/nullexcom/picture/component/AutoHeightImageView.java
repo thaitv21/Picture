@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -43,6 +44,8 @@ public class AutoHeightImageView extends androidx.appcompat.widget.AppCompatImag
 
     private void adjustHeight(int width, int height) {
         int newHeight = height * getWidth() / width;
-        setMeasuredDimension(getWidth(), newHeight);
+        ViewGroup.LayoutParams params = getLayoutParams();
+        params.height = newHeight;
+        setLayoutParams(params);
     }
 }

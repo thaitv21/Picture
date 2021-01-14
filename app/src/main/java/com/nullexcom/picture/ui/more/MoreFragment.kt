@@ -31,7 +31,7 @@ class MoreFragment : BaseEditorFragment() {
         )
         rvMenu.adapter = MenuAdapter(view.context, items).apply { setOnItemClickListener { selectPage(it) } }
         rvMenu.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
-        photoView.setImageBitmap(editorViewModel().getFilteredBitmap())
+//        photoView.setImageBitmap(editorViewModel().getFilteredBitmap())
         imgClose.setOnClickListener { showMainPage() }
     }
 

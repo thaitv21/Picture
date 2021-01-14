@@ -30,6 +30,8 @@ class SaveDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val filename = "Picture_${System.currentTimeMillis()}.png"
+        edtFilename.setText(filename)
         btnSave.setOnClickListener {
             listenCancel = false
             onSaveClick?.invoke(edtFilename.text.toString().trim())
@@ -38,7 +40,7 @@ class SaveDialog : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        (view!!.parent as View).setBackgroundColor(Color.TRANSPARENT)
+        (requireView().parent as View).setBackgroundColor(Color.TRANSPARENT)
     }
 
     override fun onDismiss(dialog: DialogInterface) {

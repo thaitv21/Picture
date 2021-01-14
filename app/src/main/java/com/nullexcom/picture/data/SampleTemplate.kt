@@ -2,6 +2,7 @@ package com.nullexcom.picture.data
 
 import com.nullexcom.picture.ext.matrixOf
 import com.nullexcom.picture.imageprocessor.ColorMatrixModule
+import com.nullexcom.picture.imageprocessor.LUTModule
 
 object SampleTemplate {
     val Default = Template()
@@ -45,4 +46,6 @@ object SampleTemplate {
             ))
         })
     }
+    val Ancient = Template().apply { addModule(LUTModule("lut_ancient.png")) }
+    val Bleached = Template().apply { addModule(LUTModule("lut_bleached.png")) }
 }

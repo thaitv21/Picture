@@ -10,19 +10,22 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.net.toFile
 import com.nullexcom.picture.data.*
+import com.nullexcom.picture.imageprocessor.ImageExporter
 import com.nullexcom.picture.ui.EditorState
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.*
 import java.util.*
 
 class EditorViewModel(intent: Intent) {
     val appState = AppState
-
+    val isLoading: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     private val pageState = BehaviorSubject.createDefault<EditorState>(EditorState.Filter.apply { shouldCreate = true })
 
     lateinit var originalBitmap: Bitmap
-    private var currentBitmap: Bitmap? = null
     private var insertedUri: Uri? = null
 
     private var name: String = intent.getStringExtra("name") ?: ""
@@ -51,28 +54,19 @@ class EditorViewModel(intent: Intent) {
     }
 
     fun popBitmap() {
-        val bitmap = stack.pop()
-        bitmap.recycle()
+        stack.pop()
     }
 
-    fun getPhoto() : Photo {
+    fun getPhoto(): Photo {
         return photo
     }
 
-    fun getTemplate() : Template {
+    fun getTemplate(): Template {
         return template
     }
 
     fun getPageState(): Observable<EditorState> {
         return pageState
-    }
-
-    fun getCropped(): Bitmap {
-        return originalBitmap
-    }
-
-    fun getFilteredBitmap(): Bitmap {
-        return currentBitmap ?: getCropped()
     }
 
     fun onNextPage() {
@@ -129,31 +123,58 @@ class EditorViewModel(intent: Intent) {
     }
 
     fun setWallpaper(context: Context) {
-        val bitmap = currentBitmap ?: return
+        val bitmap = stack.peek()
         val manager = WallpaperManager.getInstance(context)
-        manager.setBitmap(bitmap)
+
+        Completable.defer {
+            manager.setBitmap(bitmap)
+            Completable.complete()
+        }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).doOnSubscribe {
+            isLoading.onNext(true)
+        }.doOnComplete {
+            pageState.onNext(EditorState.Done)
+        }.subscribe()
+
+
     }
 
-    fun share(context: Context) {
+    fun share() {
         if (insertedUri == null) return
+        isLoading.onNext(true)
         val share = Intent(Intent.ACTION_SEND).apply {
             type = "image/*"
             putExtra(Intent.EXTRA_STREAM, insertedUri)
         }
-        context.startActivity(Intent.createChooser(share, "Share your picture to"))
+        isLoading.onNext(false)
+        finish()
+        val applicationContextCompat = ApplicationContextCompat.getInstance()
+        val context = applicationContextCompat.getApplicationContext()
+        val intent = Intent.createChooser(share, "Share your picture to").apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
     }
 
     fun publishImage() {
         val uri = insertedUri ?: return
+        isLoading.onNext(true)
         CoroutineScope(Dispatchers.IO).async {
             val uploadedUri = Firebase.uploadImage(name, uri)
             Firebase.addImage(uploadedUri, template)
         }.invokeOnCompletion {
+            isLoading.onNext(false)
             pageState.onNext(EditorState.Done)
         }
     }
 
     fun finish() {
         pageState.onNext(EditorState.Done)
+    }
+
+    fun completeEditing() {
+        pageState.onNext(EditorState.AskSave.apply {
+            shouldCreate = true
+            previousPage = pageState.value
+        })
     }
 }

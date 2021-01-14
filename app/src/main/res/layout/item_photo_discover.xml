@@ -18,6 +18,15 @@
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_launcher_background"/>
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:layout_gravity="center"
+            app:lottie_rawRes="@raw/loading"/>
+
     </FrameLayout>
 
 

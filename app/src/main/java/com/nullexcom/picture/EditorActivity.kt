@@ -1,8 +1,12 @@
 package com.nullexcom.picture
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.bumptech.glide.Glide
 import com.nullexcom.editor.ext.doOnCompleted
 import com.nullexcom.editor.ext.logD
@@ -10,8 +14,10 @@ import com.nullexcom.picture.ext.alert
 import com.nullexcom.picture.ui.EditorState
 import com.nullexcom.picture.ui.blur.BlurFragment
 import com.nullexcom.picture.ui.dialog.CompletedDialog
+import com.nullexcom.picture.ui.dialog.LoadingDialog
 import com.nullexcom.picture.ui.dialog.ProgressDialog
 import com.nullexcom.picture.ui.dialog.SaveDialog
+import com.nullexcom.picture.ui.edit.SetWallpaperReceiver
 import com.nullexcom.picture.ui.filter.FilterFragment
 import com.nullexcom.picture.ui.histogram.HistogramFragment
 import com.nullexcom.picture.ui.more.MoreFragment
@@ -26,6 +32,8 @@ class EditorActivity : AppCompatActivity() {
 
     private lateinit var progressDialog: ProgressDialog
     private lateinit var completedDialog: CompletedDialog
+    private val loadingDialog by lazy { LoadingDialog(this) }
+    private val receiver = SetWallpaperReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +41,7 @@ class EditorActivity : AppCompatActivity() {
         viewModel = EditorViewModel(intent)
         disposable = viewModel.getPageState().doOnNext { handlePage(it) }.subscribe()
         tvNext.setOnClickListener { onNextClick() }
+        btnDone.setOnClickListener { clickDone() }
         Glide.with(this).asBitmap().load(intent.getParcelableExtra("uri")!!).doOnCompleted {
             logD(it.config.toString())
         }
@@ -53,16 +62,24 @@ class EditorActivity : AppCompatActivity() {
         completedDialog = CompletedDialog().apply {
             setOnClickSetWallpaper { viewModel.setWallpaper(this@EditorActivity) }
             setOnClickPublish { viewModel.publishImage() }
-            setOnClickShare { viewModel.share(this@EditorActivity) }
+            setOnClickShare { viewModel.share() }
             setOnClickCancel { viewModel.finish() }
+        }
+        viewModel.isLoading.doOnNext { showLoading(it) }.subscribe()
+        registerReceiver(receiver, IntentFilter(Intent.ACTION_WALLPAPER_CHANGED))
+    }
+
+    private fun showLoading(show: Boolean) {
+        if (show) {
+            loadingDialog.show()
+        } else {
+            loadingDialog.cancel()
         }
     }
 
     private fun onNextClick() {
-        supportFragmentManager.fragments.find { it.isVisible && it is BaseEditorFragment }?.let {
-            (it as BaseEditorFragment).onNextAction()
-        }
-        viewModel.onNextPage()
+        val fragment = supportFragmentManager.fragments.find { it.isVisible && it is BaseEditorFragment }?.let { it as BaseEditorFragment }
+        fragment?.onNextAction()
     }
 
     private fun handlePage(state: EditorState) {
@@ -111,6 +128,11 @@ class EditorActivity : AppCompatActivity() {
             else -> null
         }
         fragment?.let { showFragment(it) }
+        if (state is EditorState.Filter) {
+            btnDone.visibility = View.GONE
+        } else {
+            btnDone.visibility = View.VISIBLE
+        }
     }
 
     private fun showFragment(fragment: BaseEditorFragment) {
@@ -129,6 +151,7 @@ class EditorActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         disposable.dispose()
+        unregisterReceiver(receiver)
         super.onDestroy()
     }
 
@@ -148,5 +171,19 @@ class EditorActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun clickDone() {
+        AlertDialog.Builder(this).apply {
+            setTitle("Hmm")
+            setMessage("We will skip the next editing steps. You definitely want to do that, right?")
+            setNegativeButton("No") { dialog, _ -> dialog.cancel() }
+            setPositiveButton("Yes") { dialog, _ ->
+                kotlin.run {
+                    dialog.cancel()
+                    viewModel.completeEditing()
+                }
+            }
+        }.show()
     }
 }

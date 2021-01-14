@@ -80,8 +80,8 @@ class HistogramFragment : BaseEditorFragment() {
     }
 
     override fun onNextAction() {
-        super.onNextAction()
         viewModel.onNext(editorViewModel)
+        super.onNextAction()
     }
 
     override fun onBackAction() {

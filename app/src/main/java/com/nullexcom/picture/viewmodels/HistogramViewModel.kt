@@ -27,7 +27,7 @@ class HistogramViewModel(val photo: Photo, private val srcBitmap: Bitmap) : AppV
         bitmap.onNext(srcBitmap)
     }
 
-    fun getTemplate() : Template {
+    fun getTemplate(): Template {
         return template
     }
 
@@ -96,9 +96,11 @@ class HistogramViewModel(val photo: Photo, private val srcBitmap: Bitmap) : AppV
 
     private fun apply() {
         CoroutineScope(Dispatchers.Default).launch {
-            val bmp = bitmap.value
+            val current = bitmap.value
+            val bmp = if (current == srcBitmap) Bitmap.createBitmap(current.width, current.height, Bitmap.Config.ARGB_8888)
+            else current
             GlobalScope.launch {
-                imageProcessor.blend(bmp, template)
+                imageProcessor.blend(srcBitmap, bmp, template)
                 withContext(Dispatchers.Main) {
                     bitmap.onNext(bmp)
                 }

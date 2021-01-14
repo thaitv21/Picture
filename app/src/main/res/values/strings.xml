@@ -51,4 +51,6 @@
     <string name="try_it_now">Go to <b>Studio</b></string>
     <string name="skip">Skip</string>
     <string name="do_nothing">Do nothing</string>
+    <string name="about">About</string>
+    <string name="save_template">Download this preset</string>
 </resources>

@@ -28,6 +28,10 @@ class FilterAdapter(val context: Context, val photo: Photo) : ListAdapter<Templa
 
     inner class FilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
+    fun hasSelected() : Boolean {
+        return currentIndex != 0
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilterViewHolder {
         return FilterViewHolder(inflater.inflate(R.layout.item_filter, parent, false))
     }

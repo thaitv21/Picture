@@ -73,9 +73,10 @@ class BlurViewModel(private val photo: Photo, private val srcBitmap: Bitmap) : A
     }
 
     override fun onCleared() {
-        segmentedBitmaps.forEach { it?.recycle() }
-        bitmap.value.recycle()
-        srcBitmap.recycle()
+//        segmentedBitmaps.forEach { it?.recycle() }
+//        if (bitmap.value != srcBitmap) {
+//            bitmap.value.recycle()
+//        }
         super.onCleared()
     }
 

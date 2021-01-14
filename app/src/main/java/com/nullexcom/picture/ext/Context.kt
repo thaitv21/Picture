@@ -3,6 +3,7 @@ package com.nullexcom.editor.ext
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Size
 import android.widget.ImageView
 import android.widget.TextView
 import java.io.*
@@ -36,3 +37,7 @@ val Context.screenHeight: Int
 
 fun Context.newImageView() : ImageView = ImageView(this)
 fun Context.newTextView() = TextView(this)
+fun Context.preferSize() : Size {
+    val metrics = applicationContext.resources.displayMetrics
+    return Size(metrics.widthPixels, metrics.heightPixels)
+}

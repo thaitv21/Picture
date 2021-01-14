@@ -14,6 +14,7 @@ import com.nullexcom.picture.imageprocessor.ImageProcessor
 import com.nullexcom.picture.data.Photo
 import com.nullexcom.picture.data.SampleTemplate
 import com.nullexcom.picture.data.Template
+import com.nullexcom.picture.data.repo.TemplateRepository
 import com.nullexcom.picture.viewmodels.AppViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -32,6 +33,7 @@ class FilterViewModel(private val photo: Photo) : AppViewModel(), LifecycleObser
     private val templates: SingleSubject<List<Template>> = SingleSubject.create<List<Template>>()
     private var currentTemplate: Template? = null
     private val applicationContextCompat: ApplicationContextCompat by lazy { ApplicationContextCompat.getInstance() }
+    private val templateRepository: TemplateRepository by lazy { TemplateRepository() }
     private val imageProcessor: ImageProcessor by lazy {
         ImageProcessor(applicationContextCompat.getApplicationContext(), photo, applicationContextCompat.preferBitmapSize())
     }
@@ -40,16 +42,11 @@ class FilterViewModel(private val photo: Photo) : AppViewModel(), LifecycleObser
     fun onCreate() {
         GlobalScope.launch {
             srcBitmap = decodeImage(uri)
-            applyFilter(srcBitmap, photo.template)
+            val out = srcBitmap.copy(Bitmap.Config.ARGB_8888, true)
+            applyFilter(out, photo.template, srcBitmap)
             withContext(Dispatchers.Main) {
-                bitmap.onNext(srcBitmap)
-                templates.onSuccess(listOf(
-                        SampleTemplate.Default,
-                        SampleTemplate.BlackAndWhite,
-                        SampleTemplate.Sepium,
-                        SampleTemplate.Purple,
-                        SampleTemplate.Yellow
-                ))
+                bitmap.onNext(out)
+                templates.onSuccess(templateRepository.getTemplates())
             }
         }
     }
@@ -64,13 +61,17 @@ class FilterViewModel(private val photo: Photo) : AppViewModel(), LifecycleObser
 
     fun onTemplate(template: Template) {
         val bmp = bitmap.value
-        applyFilter(bmp, template)
+        applyFilter(bmp, template, srcBitmap)
     }
 
-    private fun applyFilter(bmp: Bitmap, template: Template) {
+    private fun applyFilter(bmp: Bitmap, template: Template, srcBitmap: Bitmap?) {
         currentTemplate = template
         GlobalScope.launch {
-            imageProcessor.blend(bmp, template)
+            if (srcBitmap == null) {
+                imageProcessor.blend(bmp, template)
+            } else {
+                imageProcessor.blend(srcBitmap, bmp, template)
+            }
             withContext(Dispatchers.Main) {
                 bitmap.onNext(bmp)
             }
@@ -99,14 +100,13 @@ class FilterViewModel(private val photo: Photo) : AppViewModel(), LifecycleObser
 
     private fun calculateInSampleSize(size: Size, requestSize: Size): Int {
         val (height: Int, width: Int) = size.run { height to width }
-        val (reqHeight: Int, reqWidth) = requestSize.run { height to width }
-        var inSampleSize = 1
-        if (height > reqHeight || width > reqWidth) {
-            val halfHeight: Int = height / 2
-            val halfWidth: Int = width / 2
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
-            }
+        val (reqHeight: Int, reqWidth) = requestSize.run { requestSize.height to requestSize.width }
+        if (reqHeight >= height && reqWidth >= width) {
+            return 1
+        }
+        var inSampleSize = 2
+        while (width / inSampleSize > reqWidth && height / inSampleSize > height) {
+            inSampleSize *= 2
         }
         return inSampleSize
     }
@@ -116,12 +116,6 @@ class FilterViewModel(private val photo: Photo) : AppViewModel(), LifecycleObser
         val metrics = ctx.resources.displayMetrics
         return Size(metrics.widthPixels, metrics.heightPixels)
     }
-
-//    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-//    fun destroyAll() {
-//        srcBitmap.recycle()
-//        bitmap.value.recycle()
-//    }
 
     fun onNext(editorViewModel: EditorViewModel) {
         currentTemplate?.let { photo.copyFrom(it) }

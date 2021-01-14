@@ -1,5 +1,6 @@
 package com.nullexcom.picture.ui.filter
 
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,10 +26,6 @@ class FilterFragment : BaseEditorFragment() {
     private val disposable = CompositeDisposable()
     private val adapter: FilterAdapter by lazy { FilterAdapter(requireContext(), photo) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_filter, container, false)
     }
@@ -49,5 +46,30 @@ class FilterFragment : BaseEditorFragment() {
 
     override fun onNextAction() {
         viewModel.onNext(editorViewModel)
+        if (!adapter.hasSelected()) {
+            super.onNextAction()
+            return
+        }
+        AlertDialog.Builder(context).apply {
+            setTitle("Nice")
+            setMessage("You have already applied this preset. Would you like adjust anything else?")
+            setNegativeButton("No. Complete now!") { dialog, _ ->
+                kotlin.run {
+                    dialog.cancel()
+                    editorViewModel.completeEditing()
+                }
+            }
+            setPositiveButton("Yes") { dialog, _ ->
+                kotlin.run {
+                    dialog.cancel()
+                    super.onNextAction()
+                }
+            }
+        }.show()
+    }
+
+    override fun onDestroyView() {
+        disposable.dispose()
+        super.onDestroyView()
     }
 }

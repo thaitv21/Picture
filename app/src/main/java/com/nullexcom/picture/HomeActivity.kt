@@ -15,7 +15,6 @@ class HomeActivity : AppCompatActivity() {
     private val pages = listOf(
             StudioFragment(),
             DiscoverFragment(),
-            DiscoverFragment(),
             AccountFragment()
     )
 

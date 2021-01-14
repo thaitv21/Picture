@@ -49,13 +49,23 @@ class Template {
         val hsl = modules.find { it is HSLModule }?.let { (it as HSLModule).get() }
                 ?: FloatArray(36)
         val blur = modules.find { it is BlurModule }?.let { (it as BlurModule).get() } ?: 0f
-        return "aspect_ratio: ${aspectRatio.x}, ${aspectRatio.y}\n" +
+        val lut = modules.find { it is LUTModule }?.let { it as LUTModule }?.name
+        return append("lut", lut) +
+                "aspect_ratio: ${aspectRatio.x}, ${aspectRatio.y}\n" +
                 "brightness: ${brightness}\n" +
                 "contrast: $contrast\n" +
                 "saturation: $saturation \n" +
                 "color_matrix: [${colorMatrix.stringify()}]\n" +
-                "hsl: [${hsl.joinToString(separator = ", ")}]\n" +
-                "blur: $blur"
+                append("hsl", hsl.joinToString(separator = ", ")) +
+                append("blur", blur.toString())
+    }
+
+    private fun append(key: String, value: String?): String {
+        return if (value == null) {
+            ""
+        } else {
+            "${key}: ${value}\n"
+        }
     }
 
     companion object {
@@ -63,6 +73,7 @@ class Template {
             val template = Template()
             preset.split("\n").forEach {
                 when {
+                    it.startsWith("lut") -> parseLut(template, it)
                     it.startsWith("aspect_ratio") -> parseAspectRatio(template, it)
                     it.startsWith("brightness") -> parseBrightness(template, it)
                     it.startsWith("contrast") -> parseContrast(template, it)
@@ -75,20 +86,9 @@ class Template {
             return template
         }
 
-        fun fromMap(map: Map<String, String>): Template {
-            val template = Template()
-            map.keys.forEach {
-                val value = map[it] ?: ""
-                when (it) {
-                    "aspect_ratio" -> parseAspectRatio(template, value)
-                    "brightness" -> parseBrightness(template, value)
-                    "contrast" -> parseContrast(template, value)
-                    "saturation" -> parseSaturation(template, value)
-                    "color_matrix" -> parseColorMatrix(template, value)
-                    "hsl" -> parseHSL(template, value)
-                }
-            }
-            return template
+        private fun parseLut(template: Template, text: String) {
+            val lut = text.replace("lut:", "").trim()
+            template.modules.add(LUTModule(lut))
         }
 
         private fun parseAspectRatio(template: Template, text: String) {

@@ -7,74 +7,88 @@
     android:orientation="vertical"
     tools:context=".ui.account.AccountFragment">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@drawable/background_account"
-        android:elevation="10dp">
+        android:layout_height="wrap_content"
+        android:paddingVertical="20dp"
+        android:background="#fff"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imgAvatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
             android:elevation="10dp"
-            android:src="@drawable/ic_launcher_background"
-            app:riv_corner_radius="80dp" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/background"
+            app:riv_corner_radius="100dp" />
 
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
-            android:layout_toEndOf="@id/imgAvatar"
+            android:layout_marginTop="15dp"
             android:fontFamily="@font/lato_bold"
             android:text="@string/app_name"
-            android:textColor="#fff"
+            android:textColor="#000"
             android:textSize="16sp" />
 
-    </RelativeLayout>
+    </LinearLayout>
+
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/lato_bold"
+        android:paddingVertical="5dp"
         android:text="@string/change_profile_picture"
-        android:paddingVertical="5dp"
-        android:fontFamily="@font/lato_bold"
-        android:layout_marginTop="20dp"
-        android:textSize="15sp"
-        android:layout_marginStart="16dp"/>
+        android:textSize="15sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/lato_bold"
+        android:paddingVertical="5dp"
         android:text="@string/update_profile_name"
-        android:paddingVertical="5dp"
-        android:fontFamily="@font/lato_bold"
-        android:layout_marginTop="20dp"
-        android:textSize="15sp"
-        android:layout_marginStart="16dp"/>
+        android:textSize="15sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/lato_bold"
         android:paddingVertical="5dp"
         android:text="@string/help"
-        android:fontFamily="@font/lato_bold"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
-        android:textSize="15sp"
-        android:layout_marginStart="16dp"/>
+        android:fontFamily="@font/lato_bold"
+        android:paddingVertical="5dp"
+        android:text="@string/about"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/tvVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingVertical="5dp"
-        android:fontFamily="@font/lato_bold"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
-        android:textSize="15sp"
-        android:layout_marginStart="16dp"/>
+        android:fontFamily="@font/lato_bold"
+        android:paddingVertical="5dp"
+        android:textSize="15sp" />
 
 </LinearLayout>

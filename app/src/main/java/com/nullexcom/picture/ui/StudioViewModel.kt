@@ -1,15 +1,26 @@
 package com.nullexcom.picture.ui
 
+import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Size
 import androidx.core.net.toFile
+import com.nullexcom.editor.ext.preferSize
+import com.nullexcom.picture.ApplicationContextCompat
 import com.nullexcom.picture.data.Photo
 import com.nullexcom.picture.data.Firebase
 import com.nullexcom.picture.data.PhotoRepository
 import com.nullexcom.picture.data.Template
+import com.nullexcom.picture.ext.toPreferBitmap
+import com.nullexcom.picture.imageprocessor.ImageExporter
+import com.nullexcom.picture.imageprocessor.ImageProcessor
 import com.nullexcom.picture.viewmodels.AppViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.*
 import java.io.File
@@ -80,4 +91,43 @@ class StudioViewModel @Inject constructor(private val photoRepository: PhotoRepo
             Template()
         }
     }
+
+    fun share(context: Context, photo: Photo) {
+        state.onNext(State.LOADING)
+        CoroutineScope(Dispatchers.IO).launch {
+            val filename = photo.name
+            val template = photo.template
+            val imageExporter = ImageExporter(photo, filename, template)
+            val insertedUri = imageExporter.export()
+            withContext(Dispatchers.Main) {
+                val share = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_STREAM, insertedUri)
+                }
+                val intent = Intent.createChooser(share, "Share your picture to").apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+                state.onNext(State.NONE)
+            }
+        }
+    }
+
+    fun setWallpaper(context: Context, photo: Photo) {
+        val manager = WallpaperManager.getInstance(context)
+        Completable.defer {
+            val size = context.preferSize()
+            val imageProcessor = ImageProcessor(context, photo, size)
+            val src = photo.uri.toPreferBitmap()
+            val bitmap = Bitmap.createBitmap(src.width, src.height, Bitmap.Config.ARGB_8888)
+            imageProcessor.blend(bitmap, photo.template, true)
+            manager.setBitmap(bitmap)
+            Completable.complete()
+        }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).doOnSubscribe {
+            state.onNext(State.LOADING)
+        }.doOnComplete {
+            state.onNext(State.NONE)
+        }.subscribe()
+    }
+
 }

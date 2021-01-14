@@ -29,7 +29,7 @@ abstract class BaseEditorFragment : Fragment() {
     abstract fun onNewBitmap(bitmap: Bitmap)
 
     open fun onNextAction() {
-
+        editorViewModel().onNextPage()
     }
 
     open fun onBackAction() {

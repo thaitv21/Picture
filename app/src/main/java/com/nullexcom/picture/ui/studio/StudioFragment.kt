@@ -68,7 +68,7 @@ class StudioFragment : Fragment() {
     }
 
     private fun dialog() {
-        loadingDialog = LoadingDialog(context!!)
+        loadingDialog = LoadingDialog(requireContext())
         actionDialog = BottomActionDialog()
         actionDialog.submitList(actions)
     }
@@ -149,9 +149,12 @@ class StudioFragment : Fragment() {
 
     private fun handleAction(action: BottomActionDialog.Action, photo: Photo) {
         val context = context ?: return
+        actionDialog.dismiss()
         when (action.id) {
+            SHARE -> viewModel.share(context, photo)
             PUBLISH -> viewModel.publish(context, photo)
             DELETE -> viewModel.delete(context, photo)
+            SET_WALLPAPER -> viewModel.setWallpaper(context, photo)
         }
     }
 

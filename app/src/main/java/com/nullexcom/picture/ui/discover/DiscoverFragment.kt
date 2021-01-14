@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.nullexcom.editor.ext.logD
 import com.nullexcom.picture.R
 import com.nullexcom.picture.data.Picture
+import com.nullexcom.picture.ui.viewpicture.ViewPictureFragment
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_discover.*
 
@@ -22,6 +23,7 @@ class DiscoverFragment : Fragment() {
 
     private var disposable: Disposable? = null
     private val viewModel: PictureViewModel by lazy { ViewModelProvider(this).get(PictureViewModel::class.java) }
+    private lateinit var adapter: PicturePagingAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_discover, container, false)
@@ -35,8 +37,21 @@ class DiscoverFragment : Fragment() {
             setLifecycleOwner(this@DiscoverFragment)
             setQuery(viewModel.query, viewModel.config, Picture::class.java)
         }.build()
-
+        adapter = PicturePagingAdapter(context, options)
         rvPictures.layoutManager = LinearLayoutManager(context)
-        rvPictures.adapter = PicturePagingAdapter(context, options)
+        rvPictures.adapter = adapter
+        swipeLayout.setOnRefreshListener {
+            swipeLayout.isRefreshing = false
+            adapter.refresh()
+        }
+        adapter.setOnItemClickListener { openPicture(it) }
+    }
+
+    private fun openPicture(picture: Picture) {
+        val fragment = ViewPictureFragment()
+        fragment.arguments = Bundle().apply {
+            putSerializable("picture", picture)
+        }
+        fragment.show(parentFragmentManager, null)
     }
 }

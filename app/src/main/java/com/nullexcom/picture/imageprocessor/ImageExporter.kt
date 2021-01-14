@@ -1,4 +1,4 @@
-package com.nullexcom.picture.data
+package com.nullexcom.picture.imageprocessor
 
 import android.R.attr.description
 import android.content.ContentValues
@@ -9,8 +9,9 @@ import android.util.Size
 import androidx.core.net.toFile
 import com.nullexcom.picture.AppState
 import com.nullexcom.picture.ApplicationContextCompat
-import com.nullexcom.picture.imageprocessor.ImageProcessor
-import com.nullexcom.picture.ext.toBitmap
+import com.nullexcom.picture.data.Photo
+import com.nullexcom.picture.data.Template
+import com.nullexcom.picture.ext.toPreferBitmap
 import java.io.File
 import java.io.FileOutputStream
 
@@ -54,14 +55,14 @@ class ImageExporter(val photo: Photo, val name: String, private val template: Te
     }
 
     private fun applyFilter() : Bitmap {
-        val bitmap = uri.toBitmap()
+        val bitmap = uri.toPreferBitmap()
         val size = Size(bitmap.width, bitmap.height)
         val applicationContextCompat = ApplicationContextCompat.getInstance()
         val context = applicationContextCompat.getApplicationContext()
         val imageProcessor = ImageProcessor(context, photo, size)
         val outBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-        imageProcessor.blend(outBitmap, template)
-        return bitmap
+        imageProcessor.blend(outBitmap, template, true)
+        return outBitmap
     }
 
 

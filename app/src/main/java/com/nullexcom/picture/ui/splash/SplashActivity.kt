@@ -3,6 +3,8 @@ package com.nullexcom.picture.ui.splash
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.animation.BounceInterpolator
+import android.view.animation.RotateAnimation
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.nullexcom.picture.HomeActivity
@@ -22,8 +24,10 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        val animation: Animation = AnimationUtils.loadAnimation(this, R.anim.anim_infinite_rotate)
-        animation.repeatMode = Animation.INFINITE
+        val animation = RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+        animation.duration = 1000
+        animation.repeatCount = 1
+        animation.interpolator = BounceInterpolator()
         imgLogo.startAnimation(animation)
         disposable = viewModel.getState().doOnSuccess { render(it) }.subscribe()
     }
